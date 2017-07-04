@@ -1,159 +1,152 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
+using System.Globalization;
 
 namespace WcfSimpData
 {
     public abstract class SimpDataConvertHelper
     {
-        public static System.Collections.Generic.List<DataSet> SimpDataToDataSets(SimpDataEntery[][] simpDEs)
+        public static List<DataSet> SimpDataToDataSets(SimpDataEntery[][] simpDEs)
         {
             if (simpDEs == null)
                 return null;
-            SimpDataEntery[] _simplis;
 
-            System.Collections.Generic.List<DataSet> _dss = new System.Collections.Generic.List<DataSet>();
-            for (int _i = 0, _iCnt = simpDEs.Length; _i < _iCnt; _i++)
+            var dss = new List<DataSet>();
+            for (int i = 0, iCnt = simpDEs.Length; i < iCnt; i++)
             {
-                if ((_simplis = simpDEs[_i]) != null)
+                SimpDataEntery[] simplis;
+                if ((simplis = simpDEs[i]) != null)
                 {
-                    DataSet _ds = new DataSet();
-                    for (int _s = 0, _sCnt = _simplis.Length; _s < _sCnt; _s++)
+                    var ds = new DataSet();
+                    for (int s = 0, sCnt = simplis.Length; s < sCnt; s++)
                     {
-                        string _tableName = string.Format("{0}_{1}", _i, _s);
-                        DataTable _dt = SimpDataToDataTable(_simplis[_s], _tableName);
-                        if (_dt == null)
-                        {
-                            _dt = new DataTable(_tableName);
-                        }
-                        _ds.Tables.Add(_dt);
+                        var tableName = string.Format("{0}_{1}", i, s);
+                        var dt = SimpDataToDataTable(simplis[s], tableName) ?? new DataTable(tableName);
+                        ds.Tables.Add(dt);
                     }
-                    _dss.Add(_ds);
+                    dss.Add(ds);
                 }
                 else
                 {
-                    _dss.Add(null);
+                    dss.Add(null);
                 }
             }
-            return _dss;
+            return dss;
         }
 
-        public static System.Collections.Generic.List<DataTable> SimpDataToDataTables(SimpDataEntery[][] simpDEs)
+        public static List<DataTable> SimpDataToDataTables(SimpDataEntery[][] simpDEs)
         {
             if (simpDEs == null)
                 return null;
-            SimpDataEntery[] _simplis;
-
-            System.Collections.Generic.List<DataTable> _dts = new System.Collections.Generic.List<DataTable>();
-            for (int _i = 0, _iCnt = simpDEs.Length; _i < _iCnt; _i++)
+            var dts = new List<DataTable>();
+            for (int i = 0, iCnt = simpDEs.Length; i < iCnt; i++)
             {
-                _simplis = simpDEs[_i];
-                for (int _s = 0, _sCnt = _simplis.Length; _s < _sCnt; _s++)
+                var simplis = simpDEs[i];
+                for (int s = 0, sCnt = simplis.Length; s < sCnt; s++)
                 {
-                    _dts.Add(SimpDataToDataTable(_simplis[_s], string.Format("{0}_{1}", _i, _s)));
+                    dts.Add(SimpDataToDataTable(simplis[s], string.Format("{0}_{1}", i, s)));
                 }
             }
-            return _dts;
+            return dts;
         }
 
         private static DataTable SimpDataToDataTable(SimpDataEntery simpEnty, string tbname)
         {
             if (simpEnty == null)
                 return null;
-            DataTable _dt = new DataTable();
-            for (int _i = 0, _iCnt = simpEnty.Cols.Length; _i < _iCnt; _i++)
+            var dt = new DataTable();
+            for (int i = 0, iCnt = simpEnty.Cols.Length; i < iCnt; i++)
             {
-                _dt.Columns.Add(simpEnty.Cols[_i].name, GetDotNetType(simpEnty.Cols[_i].type));
+                dt.Columns.Add(simpEnty.Cols[i].name, GetDotNetType(simpEnty.Cols[i].type));
             }
-            if (simpEnty.Key != null) _dt.PrimaryKey = new DataColumn[] { _dt.Columns[simpEnty.Key] };
-            for (int _i = 0, _iCnt = simpEnty.Rows.Count; _i < _iCnt; _i++)
+            if (simpEnty.Key != null) dt.PrimaryKey = new[] {dt.Columns[simpEnty.Key]};
+            for (int i = 0, iCnt = simpEnty.Rows.Count; i < iCnt; i++)
             {
-                _dt.LoadDataRow(simpEnty.Rows[_i], false);
+                dt.LoadDataRow(simpEnty.Rows[i], false);
             }
-            _dt.TableName = tbname;
-            return _dt;
+            dt.TableName = tbname;
+            return dt;
         }
 
         public static SimpDataEntery DataTableToSimpDataEntery(DataTable covDt)
         {
-            int _i = 0, _iCnt = covDt.Columns.Count, _r = 0, _rCnt = covDt.Rows.Count;
-            SimpDataColInf[] _simpCols = new SimpDataColInf[_iCnt];
-            for (; _i < _iCnt; _i++)
+            int i = 0, iCnt = covDt.Columns.Count, r = 0, rCnt = covDt.Rows.Count;
+            var simpCols = new SimpDataColInf[iCnt];
+            for (; i < iCnt; i++)
             {
-                _simpCols[_i].name = covDt.Columns[_i].ColumnName;
-                _simpCols[_i].type = (DotNetType)Enum.Parse(typeof(DotNetType), covDt.Columns[_i].DataType.Name);
+                simpCols[i].name = covDt.Columns[i].ColumnName;
+                simpCols[i].type = (DotNetType) Enum.Parse(typeof (DotNetType), covDt.Columns[i].DataType.Name);
             }
 
-            List<object[]> _simpRows = new List<object[]>();
-            for (; _r < _rCnt; _r++)
+            var simpRows = new List<object[]>();
+            for (; r < rCnt; r++)
             {
-                object[] _objs = covDt.Rows[_r].ItemArray;
-
-                ConvertObjects(ref _objs);
-                _simpRows.Add(_objs);
+                var objs = covDt.Rows[r].ItemArray;
+                ConvertObjects(ref objs);
+                simpRows.Add(objs);
             }
-            SimpDataEntery _simpDt = new SimpDataEntery() { Cols = _simpCols, Rows = _simpRows, TVal = System.DateTime.Now.Ticks };
-            return _simpDt;
+            var simpDt = new SimpDataEntery {Cols = simpCols, Rows = simpRows, TVal = DateTime.Now.Ticks};
+            return simpDt;
         }
 
-        public static SimpDataEntery DataRowToSimpDataEntery(DataRow _dr)
+        public static SimpDataEntery DataRowToSimpDataEntery(DataRow dr)
         {
-            DataTable _dt = _dr.Table;
-            int _i = 0, _iCnt = _dt.Columns.Count;
-            SimpDataColInf[] _simpCols = new SimpDataColInf[_iCnt];
-            for (; _i < _iCnt; _i++)
+            var dt = dr.Table;
+            int i = 0, iCnt = dt.Columns.Count;
+            var simpCols = new SimpDataColInf[iCnt];
+            for (; i < iCnt; i++)
             {
-                _simpCols[_i].name = _dt.Columns[_i].ColumnName;
-                _simpCols[_i].type = (DotNetType)Enum.Parse(typeof(DotNetType), _dt.Columns[_i].DataType.Name);
+                simpCols[i].name = dt.Columns[i].ColumnName;
+                simpCols[i].type = (DotNetType) Enum.Parse(typeof (DotNetType), dt.Columns[i].DataType.Name);
             }
 
-            object[] _objs = _dr.ItemArray;
-            ConvertObjects(ref _objs);
-            List<object[]> _simpRows = new List<object[]>() { _objs };
-            SimpDataEntery _simpDt = new SimpDataEntery() { Cols = _simpCols, Rows = _simpRows, TVal = System.DateTime.Now.Ticks };
-            return _simpDt;
+            var objs = dr.ItemArray;
+            ConvertObjects(ref objs);
+            var simpRows = new List<object[]> {objs};
+            var simpDt = new SimpDataEntery {Cols = simpCols, Rows = simpRows, TVal = DateTime.Now.Ticks};
+            return simpDt;
         }
 
         private static void ConvertObjects(ref object[] objs)
         {
-            for (int _i = 0, _iCnt = objs.Length; _i < _iCnt; _i++)
+            for (int i = 0, iCnt = objs.Length; i < iCnt; i++)
             {
-                if (objs[_i].Equals(DBNull.Value))
+                if (objs[i].Equals(DBNull.Value))
                 {
-                    objs[_i] = null;
+                    objs[i] = null;
                 }
-                if (objs[_i] is DateTime)
+                if (objs[i] is DateTime)
                 {
-                    objs[_i] = ((DateTime)objs[_i]).ToString();
+                    objs[i] = ((DateTime) objs[i]).ToString(CultureInfo.InvariantCulture);
                 }
-                if (objs[_i] is Boolean)
+                if (objs[i] is bool)
                 {
-                    objs[_i] = objs[_i].Equals(true) ? 1 : 0;
+                    objs[i] = objs[i].Equals(true) ? 1 : 0;
                 }
             }
         }
 
-        public static System.Type GetDotNetType(DotNetType type)
+        public static Type GetDotNetType(DotNetType type)
         {
             switch (type)
             {
                 case DotNetType.Boolean:
-                    return typeof(System.Boolean);
+                    return typeof (bool);
                 case DotNetType.Byte:
-                    return typeof(System.Byte);
+                    return typeof (byte);
                 case DotNetType.DateTime:
-                    return typeof(System.DateTime);
+                    return typeof (DateTime);
                 case DotNetType.Decimal:
-                    return typeof(System.Decimal);
+                    return typeof (decimal);
                 case DotNetType.Int32:
-                    return typeof(System.Int32);
+                    return typeof (int);
                 case DotNetType.Int64:
-                    return typeof(System.Int64);
+                    return typeof (long);
                 case DotNetType.String:
-                    return typeof(System.String);
+                    return typeof (string);
                 default:
-                    return typeof(System.String);
+                    return typeof (string);
             }
         }
     }
