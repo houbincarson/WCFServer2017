@@ -322,6 +322,28 @@ namespace WcfSimpData
       return ret;
     }
     #endregion
+
+    internal string ExecuteJsonScalar(DbCommand cmd)
+    {
+        var dbfactory = DbProviderFactories.GetFactory(dbProviderName);
+        var dbDataAdapter = dbfactory.CreateDataAdapter();
+        var ds = new DataSet();
+        var tran = MyTransaction.BeginTransaction(cmd);
+        if (dbDataAdapter == null) 
+            return "{\"ERROR\":\"\"}";
+        dbDataAdapter.SelectCommand = cmd;
+        try
+        {
+            dbDataAdapter.Fill(ds);
+            tran.Commit();
+        }
+        catch (Exception e)
+        {
+            tran.Rollback();
+            ds.Tables.Add(CreateErrorTable(e.ToString()));
+        }
+        return JsonHelper.DataSetToJson(ds);
+    }
   }
 
   public class MyTransaction

@@ -25,7 +25,13 @@ namespace WcfService
         private const string SUDID_KEY_REGE = "MF7097G06704851-BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A";
 
         #region ISimpDbServer 成员
-
+        public string DataRequest_By_JsonString(string methodRequests)
+        {
+            var jsonserial = CreateJsonSerial();
+            var metodReq = jsonserial.Deserialize<MethodRequest>(methodRequests);
+            var sh = new ShareSqlManager();
+            return sh.ExecStoredProc(metodReq.ProceName,metodReq.ParamKeys,metodReq.ParamVals,metodReq.ProceDb, RetType.String).ToString(); 
+        }
         public string DataRequest_By_String(string methodRequests)
         {
             JavaScriptSerializer _jsonserial = CreateJsonSerial();
@@ -145,7 +151,7 @@ namespace WcfService
             return _ds;
         }
 
-        public byte[] DataRequest_By_SimpDEs_All_GZip(byte[] methodBytes)
+        public byte[] DataRequest_By_SimpDEs_All_GZip(byte[] methodBts)
         {
 #if SUDID_KEY_REGE
       if (!MachineCode.CurrentMachineCode.Hash.Equals(SUDID_KEY_REGE))
@@ -153,7 +159,7 @@ namespace WcfService
         return null;
       }
 #endif
-            byte[] _metBts = GZipStreamHelper.GZipDecompress(methodBytes);
+            byte[] _metBts = GZipStreamHelper.GZipDecompress(methodBts);
             string _jsonSimpEtys = DataRequest_By_SimpDEs(System.Text.Encoding.UTF8.GetString(_metBts));
             byte[] _bts = System.Text.Encoding.UTF8.GetBytes(_jsonSimpEtys);
             return GZipStreamHelper.GZipCompress(_bts);
@@ -388,5 +394,8 @@ namespace WcfService
 
             return _ds;
         }
+
+
+       
     }
 }
