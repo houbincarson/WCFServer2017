@@ -21,14 +21,14 @@ namespace WcfService
   {
     get
     {
-      if (_CurrentMachineCode == null)
+      if (currentMachineCode == null)
       {
-        _CurrentMachineCode = new MachineCode();
+        currentMachineCode = new MachineCode();
       }
-      return _CurrentMachineCode;
+      return currentMachineCode;
     }
   }
-  private static MachineCode _CurrentMachineCode;
+  private static MachineCode currentMachineCode;
 
   /// <summary>
   /// 静态构造

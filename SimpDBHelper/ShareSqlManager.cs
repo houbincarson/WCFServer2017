@@ -24,7 +24,7 @@ namespace SimpDBHelper
         /// <param name="paramVals">参数值数组</param>
         /// <param name="strRetType">Table返回DataTable；String时返回string；Int时返回int</param>
         /// <returns></returns>
-        public object ExecStoredProc(string storedProcedure, string[] paramKeys, object[] paramVals, string dbConName, RetType retType)
+        public object ExecStoredProc(string storedProcedure, string[] paramKeys, string[] paramVals, string dbConName, RetType retType)
         {
             ConnectionStringSettings _conStrs = ConfigurationManager.ConnectionStrings[dbConName];
             if (_conStrs == null)

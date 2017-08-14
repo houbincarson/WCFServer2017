@@ -1,5 +1,10 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Data;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Web;
+using WcfSimpData;
 
 namespace WcfService
 {
@@ -21,8 +26,18 @@ namespace WcfService
 
         [OperationContract]
         string GetPicture(string methodRequests);
+    }
+
+    [ServiceContract]
+    public interface IJsonDbServer
+    {
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "GetResultJson")]
+        string GetResultJson(string proceDb, string proceName, string[] paramKeys, string[] paramVals);
 
         [OperationContract]
-        string DataRequest_By_JsonString(string methodRequests); 
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.WrappedRequest, RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "GetSimpDEsJson")]
+        string GetSimpDEsJson(string proceDb, string proceName, string[] paramKeys, string[] paramVals); 
+      
     }
 }

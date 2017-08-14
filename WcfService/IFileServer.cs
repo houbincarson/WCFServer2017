@@ -8,13 +8,14 @@ namespace WcfService
   public interface IFileServer
   {
     [OperationContract]
-    List<FileEntery> LoadUpdataByte(string _methodRequests);
+    List<FileEntery> LoadUpdataByte(string infs); 
     [OperationContract]
-    byte[] FileDownLoad(string _methodRequests);
+    byte[] FileDownLoad(string methodRequests); 
     [OperationContract]
-    string FileUpLoad(byte[] fileBuf, string _methodRequests);
+    string FileUpLoad(byte[] fileBuf, string methodRequests);
   }
   
+
   [DataContract]
   public class FileEntery
   {

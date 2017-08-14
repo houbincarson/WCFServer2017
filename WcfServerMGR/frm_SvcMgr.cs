@@ -8,55 +8,72 @@ using System.Text;
 using System.Windows.Forms;
 using System.ServiceModel;
 using WcfService;
+using System.ServiceModel.Description;
 
 namespace WcfServerMGR
 {
   public partial class frm_SvcMgr : Form
   {
-    private DataSet BaseDataSets { get; set; }
     private ServiceHost SimpDbServer
     {
       get
       {
-        if (_SimpDbServer == null || _SimpDbServer.State == CommunicationState.Closed)
+        if (simpDbServer == null || simpDbServer.State == CommunicationState.Closed)
         {
-          _SimpDbServer = null;
-          _SimpDbServer = new ServiceHost(typeof(WcfService.SimpDbServer));
+          simpDbServer = null;
+          simpDbServer = new ServiceHost(typeof(WcfService.SimpDbServer));
+
         }
-        return _SimpDbServer;
+        return simpDbServer;
       }
+    } 
+    private ServiceHost simpDbServer = null;
+
+    private ServiceHost JsonDbServer
+    {
+        get
+        {
+            if (jsonDbServer == null || jsonDbServer.State == CommunicationState.Closed)
+            {
+                jsonDbServer = null;
+                jsonDbServer = new ServiceHost(typeof(WcfService.JsonDbServer));
+
+            }
+            return jsonDbServer;
+        }
     }
-    private ServiceHost _SimpDbServer = null;
+    private ServiceHost jsonDbServer = null;
 
-
+    
     private ServiceHost FileServer
     {
       get
       {
-        if (_FileServer == null || _FileServer.State == CommunicationState.Closed)
+        if (fileServer == null || fileServer.State == CommunicationState.Closed)
         {
-          _FileServer = null;
-          _FileServer = new ServiceHost(typeof(WcfService.FileServer));
+          fileServer = null;
+          fileServer = new ServiceHost(typeof(WcfService.FileServer));
         }
-        return _FileServer;
+        return fileServer;
       }
     }
-    private ServiceHost _FileServer = null;
+    private ServiceHost fileServer = null;
 
 
     private ServiceHost BaseDataServer
     {
       get
       {
-        if (_BaseDataServer == null || _BaseDataServer.State == CommunicationState.Closed)
+        if (baseDataServer == null || baseDataServer.State == CommunicationState.Closed)
         {
-          _BaseDataServer = null;
-          _BaseDataServer = new ServiceHost(typeof(BaseDataCacheServer.BaseDataServer));
+          baseDataServer = null;
+          baseDataServer = new ServiceHost(typeof(BaseDataCacheServer.BaseDataServer));
         }
-        return _BaseDataServer;
+        return baseDataServer;
       }
     }
-    private ServiceHost _BaseDataServer = null;
+    private ServiceHost baseDataServer = null;
+
     private const string SUDID_KEY_REGE = "MF7097G06704851-BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A";
     public frm_SvcMgr()
     {
@@ -76,11 +93,17 @@ namespace WcfServerMGR
       try
       {
         SimpDbServer.Open();
-        listView1.Items.Add(new ListViewItem(string.Format("-------------------SimpDbServer 服务启动成功-------------------------")));
+        listView1.Items.Add(new ListViewItem(string.Format("-------------------SimpDbServer 服务启动成功-------------------------")));  
         AddServerInfo(SimpDbServer.Description.Endpoints);
+
+        JsonDbServer.Open();
+        listView1.Items.Add(new ListViewItem(string.Format("-------------------JsonDbServer 服务启动成功-------------------------")));
+        AddServerInfo(JsonDbServer.Description.Endpoints);
+
         FileServer.Open();
         listView1.Items.Add(new ListViewItem(string.Format("-------------------FileServer 服务启动成功-------------------------")));
         AddServerInfo(FileServer.Description.Endpoints);
+
         BaseDataServer.Open();
         listView1.Items.Add(new ListViewItem(string.Format("-------------------BaseDataServer 服务启动成功-------------------------")));
         AddServerInfo(BaseDataServer.Description.Endpoints);
@@ -112,10 +135,16 @@ namespace WcfServerMGR
       {
         SimpDbServer.Abort();
         listView1.Items.Add(new ListViewItem("SimpDbServer 服务关闭"));
+
+        JsonDbServer.Abort();
+        listView1.Items.Add(new ListViewItem("JsonDbServer 服务关闭"));
+
         FileServer.Abort();
         listView1.Items.Add(new ListViewItem("FileServer 服务关闭"));
+
         BaseDataServer.Abort();
         listView1.Items.Add(new ListViewItem("BaseDataServer 服务关闭"));
+
         btnStartServer.Enabled = true;
         btnStopServer.Enabled = false;
       }
