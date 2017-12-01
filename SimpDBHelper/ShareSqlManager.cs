@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using WcfSimpData;
@@ -15,6 +16,7 @@ namespace SimpDBHelper
     }
     public class ShareSqlManager
     {
+        private string DeEncryptKey = "#QJLLHB*";
 
         /// <summary>
         /// 
@@ -31,7 +33,7 @@ namespace SimpDBHelper
             {
                 throw (new System.Exception(string.Format("调用数据库 {0} 错误.", dbConName)));
             }
-            string _dbConString = _conStrs.ConnectionString;
+            string _dbConString = MyEncrypt.DecryptDES(_conStrs.ConnectionString, DeEncryptKey);
             SimpDataDBHelper dbComObj = new SimpDataDBHelper(_dbConString);
 
             if (string.IsNullOrWhiteSpace(storedProcedure))

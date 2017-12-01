@@ -69,6 +69,7 @@
     <Compile Include="GZipStreamHelper.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MethodRequest.cs" />
+    <Compile Include="MyEncrypt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerMethodCheck.cs" />
     <Compile Include="SimpDataColInf.cs" />
