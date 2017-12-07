@@ -14,7 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace WcfService
 {
-    [System.ServiceModel.ServiceBehavior(InstanceContextMode = System.ServiceModel.InstanceContextMode.PerCall,ConcurrencyMode = System.ServiceModel.ConcurrencyMode.Multiple,UseSynchronizationContext = false)]
+    [System.ServiceModel.ServiceBehavior(InstanceContextMode = System.ServiceModel.InstanceContextMode.PerCall,
+        ConcurrencyMode = System.ServiceModel.ConcurrencyMode.Multiple,
+        UseSynchronizationContext = false)]
     public class SimpDbServer : ISimpDbServer
     {
         private static JavaScriptSerializer CreateJsonSerial()
@@ -25,7 +27,7 @@ namespace WcfService
         private const string SUDID_KEY_REGE = "MF7097G06704851-BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A BFEBFBFF0001067A";
 
         #region ISimpDbServer 成员
-        
+
 
         public string DataRequest_By_String(string methodRequests)
         {
@@ -112,7 +114,7 @@ namespace WcfService
 #endif
             var metodReq = jsonserial.Deserialize<MethodRequest>(methodRequests);
             var sh = new ShareSqlManager();
-            var dt = (DataTable)sh.ExecStoredProc(metodReq.ProceName,metodReq.ParamKeys,metodReq.ParamVals,metodReq.ProceDb,RetType.Table);
+            var dt = (DataTable)sh.ExecStoredProc(metodReq.ProceName, metodReq.ParamKeys, metodReq.ParamVals, metodReq.ProceDb, RetType.Table);
             dt.TableName = metodReq.ProceName;
             return dt;
         }
@@ -128,7 +130,7 @@ namespace WcfService
 #endif
             var metodReq = jsonserial.Deserialize<MethodRequest>(methodRequests);
             var sh = new ShareSqlManager();
-            var ds = (DataSet)sh.ExecStoredProc(metodReq.ProceName,metodReq.ParamKeys,metodReq.ParamVals,metodReq.ProceDb,RetType.DataSet);
+            var ds = (DataSet)sh.ExecStoredProc(metodReq.ProceName, metodReq.ParamKeys, metodReq.ParamVals, metodReq.ProceDb, RetType.DataSet);
             for (int i = 0, iCnt = ds.Tables.Count; i < iCnt; i++)
             {
                 ds.Tables[i].TableName = string.Format("{0}_{1}", metodReq.ProceName, i);
@@ -150,10 +152,10 @@ namespace WcfService
             return GZipStreamHelper.GZipCompress(bts);
         }
 
-        public string Get_String(string methodRequests)
-        {
-            return methodRequests;
-        }
+        //public string Get_String(string methodRequests)
+        //{
+        //    return methodRequests;
+        //}
 
         public byte[] DataRequest_By_SimpDEs_GZip(string methodRequests)
         {
@@ -165,7 +167,7 @@ namespace WcfService
 #endif
             var jsonSimpEtys = DataRequest_By_SimpDEs(methodRequests);
             var bts = System.Text.Encoding.UTF8.GetBytes(jsonSimpEtys);
-           
+
             return GZipStreamHelper.GZipCompress(bts);//WCF消息传至客户端的时候会自动用Base64编码
         }
         public string DataRequest_By_SimpDEs(string methodRequests)
@@ -188,7 +190,7 @@ namespace WcfService
             List<List<SimpDataEntery>> simpEtys = new List<List<SimpDataEntery>>();
             for (int i = 0, iCnt = metodReqs.Length; i < iCnt; i++)
             {
-                List<SimpDataEntery> lis =(List<SimpDataEntery>)sh.ExecStoredProc(metodReqs[i].ProceName,metodReqs[i].ParamKeys,metodReqs[i].ParamVals,metodReqs[i].ProceDb,RetType.SimpDEs);
+                List<SimpDataEntery> lis = (List<SimpDataEntery>)sh.ExecStoredProc(metodReqs[i].ProceName, metodReqs[i].ParamKeys, metodReqs[i].ParamVals, metodReqs[i].ProceDb, RetType.SimpDEs);
                 if (string.IsNullOrWhiteSpace(metodReqs[i].ProceName))
                 {
                     throw (new System.Exception("调用名称为空."));
@@ -205,7 +207,7 @@ namespace WcfService
                     (
                       new SimpDataEntery()
                       {
-                         Cols = new SimpDataColInf[] 
+                          Cols = new SimpDataColInf[] 
                          {
                            new SimpDataColInf ()
                            {
@@ -213,7 +215,7 @@ namespace WcfService
                                 type = (DotNetType)System.Enum.Parse(typeof(DotNetType), "String") 
                            }
                          },
-                         Rows = new List<object[]>() 
+                          Rows = new List<object[]>() 
                          {
                             new object[]
                             {
@@ -378,14 +380,14 @@ namespace WcfService
         }
     }
 
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)] 
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public class JsonDbServer : IJsonDbServer
     {
-        #region IJsonDbServer 成员 
+        #region IJsonDbServer 成员
         public string GetResultJson(string proceDb, string proceName, string[] paramKeys, string[] paramVals)
         {
-            return  new ShareSqlManager().ExecStoredProc(proceName, paramKeys, paramVals, proceDb, RetType.Json).ToString(); 
+            return new ShareSqlManager().ExecStoredProc(proceName, paramKeys, paramVals, proceDb, RetType.Json).ToString();
         }
         public string GetSimpDEsJson(string proceDb, string proceName, string[] paramKeys, string[] paramVals)
         {

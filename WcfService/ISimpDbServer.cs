@@ -12,20 +12,19 @@ namespace WcfService
     public interface ISimpDbServer
     {
         [OperationContract]
-        string DataRequest_By_String(string methodRequests);
+        string DataRequest_By_String(string _methodRequests);
         [OperationContract]
-        DataTable DataRequest_By_DataTable(string methodRequests);
+        DataTable DataRequest_By_DataTable(string _methodRequests);
         [OperationContract]
-        DataSet DataRequest_By_DataSet(string methodRequests);
+        DataSet DataRequest_By_DataSet(string _methodRequests);
         [OperationContract]
-        string DataRequest_By_SimpDEs(string methodRequests);
+        string DataRequest_By_SimpDEs(string _methodRequests);
         [OperationContract]
-        byte[] DataRequest_By_SimpDEs_GZip(string methodRequests);
+        byte[] DataRequest_By_SimpDEs_GZip(string _methodRequests);
         [OperationContract]
-        byte[] DataRequest_By_SimpDEs_All_GZip(byte[] methodBts);
-
+        byte[] DataRequest_By_SimpDEs_All_GZip(byte[] _methodBts);
         [OperationContract]
-        string GetPicture(string methodRequests);
+        string GetPicture(string _methodRequests);
     }
 
     [ServiceContract]
