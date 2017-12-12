@@ -23,8 +23,6 @@ namespace WcfService
         byte[] DataRequest_By_SimpDEs_GZip(string _methodRequests);
         [OperationContract]
         byte[] DataRequest_By_SimpDEs_All_GZip(byte[] _methodBts);
-        [OperationContract]
-        string GetPicture(string _methodRequests);
     }
 
     [ServiceContract]

@@ -59,6 +59,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\VsWork\珠宝营销系统-主项目\珠宝营销系统\AppRunDll\DataTableExtend.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MySQLDriverCS, Version=3.0.1735.36021, Culture=neutral, PublicKeyToken=172f94dfb0faf263, processorArchitecture=x86" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -103,7 +107,6 @@
   <ItemGroup>
     <Compile Include="BaseTablesCheck.cs" />
     <Compile Include="ClientRunDll_Helper.cs" />
-    <Compile Include="DicomHandler.cs" />
     <Compile Include="OA_DB_MSG_Helper.cs" />
     <Compile Include="FileSplitUpLoad.cs" />
     <Compile Include="IFileServer.cs" />
@@ -131,6 +134,14 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="UpAppDlls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
