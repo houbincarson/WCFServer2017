@@ -26,30 +26,30 @@ namespace SimpDBHelper
         /// <param name="paramVals">参数值数组</param>
         /// <param name="strRetType">Table返回DataTable；String时返回string；Int时返回int</param>
         /// <returns></returns>
-        public object ExecStoredProc(string storedProcedure, string[] paramKeys, string[] paramVals, string dbConName, RetType retType)
+        public object ExecStoredProc(string storedProcedure, string[] paramKeys, string[] paramVals, string dbConName, RetType strRetType)
         {
-            ConnectionStringSettings _conStrs = ConfigurationManager.ConnectionStrings[dbConName];
-            if (_conStrs == null)
+            ConnectionStringSettings conStrs = ConfigurationManager.ConnectionStrings[dbConName];
+            if (conStrs == null)
             {
-                throw (new System.Exception(string.Format("调用数据库 {0} 错误.", dbConName)));
+                throw (new Exception(string.Format("调用数据库 {0} 错误.", dbConName)));
             }
-            string _dbConString = MyEncrypt.DecryptDES(_conStrs.ConnectionString, DeEncryptKey);
-            SimpDataDBHelper dbComObj = new SimpDataDBHelper(_dbConString);
+            string dbConString = MyEncrypt.DecryptDES(conStrs.ConnectionString, DeEncryptKey);
+            SimpDataDBHelper dbComObj = new SimpDataDBHelper(dbConString);
 
             if (string.IsNullOrWhiteSpace(storedProcedure))
             {
-                throw (new System.Exception("调用名称为空."));
+                throw (new Exception("调用名称为空."));
             }
             using (DbCommand cmd = dbComObj.GetStoredProcCommond(storedProcedure))
             {
                 if (paramKeys != null && paramVals != null && paramKeys.Length != 0 && paramVals.Length != 0)
                 {
-                    for (int _i = 0, _iCnt = paramKeys.Length; _i < _iCnt; _i++)
+                    for (int i = 0, iCnt = paramKeys.Length; i < iCnt; i++)
                     {
-                        dbComObj.AddInParameter(cmd, "@" + paramKeys[_i], DbType.String, paramVals[_i].ToString());
+                        dbComObj.AddInParameter(cmd, "@" + paramKeys[i], DbType.String, paramVals[i].ToString());
                     }
                 }
-                switch (retType)
+                switch (strRetType)
                 {
                     case RetType.String:
                         return dbComObj.ExecuteScalar(cmd);
@@ -61,8 +61,9 @@ namespace SimpDBHelper
                         return dbComObj.ExecuteSimpData(cmd);
                     case RetType.Json:
                         return dbComObj.ExecuteJsonScalar(cmd);
+                    default:
+                        return null;
                 }
-                return null;
             }
         }
     }

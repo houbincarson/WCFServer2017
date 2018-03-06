@@ -16,14 +16,14 @@ namespace WcfSimpData
         //数据类型
         private const string DbProviderName = "System.Data.SqlClient";
         //数据库连接字串
-        private static string _dbConnectionString = "";
+        private static readonly string _dbConnectionString = "";
 
-        private DbConnection _connection;
+        private readonly DbConnection _connection;
 
         //构造函数
         public SimpDataDBHelper()
         {
-            _connection = CreateConnection(SimpDataDBHelper._dbConnectionString);
+            _connection = CreateConnection(_dbConnectionString);
         }
         public SimpDataDBHelper(string connectionString)
         {
@@ -37,17 +37,31 @@ namespace WcfSimpData
 
         public static DbConnection CreateConnection()
         {
-            DbProviderFactory dbfactory = DbProviderFactories.GetFactory(SimpDataDBHelper.DbProviderName);
+            DbProviderFactory dbfactory = DbProviderFactories.GetFactory(DbProviderName);
             DbConnection dbconn = dbfactory.CreateConnection();
-            dbconn.ConnectionString = SimpDataDBHelper._dbConnectionString;
-            return dbconn;
+            if (dbconn != null)
+            {
+                dbconn.ConnectionString = _dbConnectionString;
+                return dbconn;
+            }
+            else
+            {
+                return null;
+            }
         }
         public static DbConnection CreateConnection(string connectionString)
         {
             DbProviderFactory dbfactory = DbProviderFactories.GetFactory(SimpDataDBHelper.DbProviderName);
             DbConnection dbconn = dbfactory.CreateConnection();
-            dbconn.ConnectionString = connectionString;
-            return dbconn;
+            if (dbconn != null)
+            {
+                dbconn.ConnectionString = connectionString;
+                return dbconn;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -91,14 +105,14 @@ namespace WcfSimpData
                 Rows = new List<object[]>() { new object[] { erroeMsg } }
             };
         }
-        private static object _Syn = new object();
+        private static readonly object Syn = new object();
         private static DataTable ErrorTable
         {
             get
             {
                 if (_errorTable == null)
                 {
-                    lock (_Syn)
+                    lock (Syn)
                     {
                         if (_errorTable == null)
                         {
@@ -194,16 +208,20 @@ namespace WcfSimpData
             DbProviderFactory dbfactory = DbProviderFactories.GetFactory(DbProviderName);
             DbDataAdapter dbDataAdapter = dbfactory.CreateDataAdapter();
             DataSet ds = new DataSet();
-            MyTransaction _tran = MyTransaction.BeginTransaction(cmd);
+            MyTransaction tran = MyTransaction.BeginTransaction(cmd);
+            if (dbDataAdapter == null)
+            {
+                return ds;
+            }
             dbDataAdapter.SelectCommand = cmd;
             try
             {
                 dbDataAdapter.Fill(ds);
-                _tran.Commit();
+                tran.Commit();
             }
             catch (Exception e)
             {
-                _tran.Rollback();
+                tran.Rollback();
                 ds.Tables.Add(CreateErrorTable(e.ToString()));
             }
             return ds;
@@ -214,18 +232,22 @@ namespace WcfSimpData
         {
             DbProviderFactory dbfactory = DbProviderFactories.GetFactory(DbProviderName);
             DbDataAdapter dbDataAdapter = dbfactory.CreateDataAdapter();
-            DataTable dataTable = null;
-            MyTransaction _tran = MyTransaction.BeginTransaction(cmd);
+            DataTable dataTable = new DataTable();
+            MyTransaction tran = MyTransaction.BeginTransaction(cmd);
+            if (dbDataAdapter == null)
+            {
+                return dataTable;
+            }
             dbDataAdapter.SelectCommand = cmd;
             try
             {
                 dataTable = new DataTable();
                 dbDataAdapter.Fill(dataTable);
-                _tran.Commit();
+                tran.Commit();
             }
             catch (Exception e)
             {
-                _tran.Rollback();
+                tran.Rollback();
                 dataTable = CreateErrorTable(e.ToString());
             }
             return dataTable;
@@ -234,7 +256,6 @@ namespace WcfSimpData
         {
             var tran = MyTransaction.BeginTransaction(cmd);
             List<SimpDataEntery> simpDbEnterys = new List<SimpDataEntery>();
-            string _fieldType = string.Empty;
             try
             {
                 using (DbDataReader reader = cmd.ExecuteReader())
@@ -245,7 +266,11 @@ namespace WcfSimpData
                         for (int i = 0, iCnt = reader.FieldCount; i < iCnt; i++)
                         {
                             simpCols[i].name = reader.GetName(i);
-                            simpCols[i].type = (DotNetType)Enum.Parse(typeof(DotNetType), reader.GetFieldType(i).Name);
+                            var memberInfo = reader.GetFieldType(i);
+                            if (memberInfo != null) 
+                            {
+                                simpCols[i].type = (DotNetType)Enum.Parse(typeof(DotNetType), memberInfo.Name);
+                            }
                         }
                         var simpRows = new List<object[]>();
                         while (reader.Read())
@@ -267,7 +292,6 @@ namespace WcfSimpData
                                     objs[i] = objs[i].Equals(true) ? 1 : 0;
                                 }
                             }
-                            //_reader.GetValues(_objs);
                             simpRows.Add(objs);
                         }
                         simpDbEnterys.Add(new SimpDataEntery() { Cols = simpCols, Rows = simpRows, TVal = System.DateTime.Now.Ticks });
@@ -307,7 +331,7 @@ namespace WcfSimpData
         public object ExecuteScalar(DbCommand cmd)
         {
             MyTransaction tran = MyTransaction.BeginTransaction(cmd);
-            object ret = null;
+            object ret;
             try
             {
                 ret = cmd.ExecuteScalar();
@@ -347,8 +371,8 @@ namespace WcfSimpData
 
     public class MyTransaction
     {
-        private DbTransaction _transaction = null;
-        private DbCommand _command = null;
+        private readonly DbTransaction _transaction;
+        private readonly DbCommand _command;
        
         private MyTransaction(DbCommand cmd)
         {

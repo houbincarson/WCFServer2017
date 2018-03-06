@@ -37,8 +37,8 @@
             // 
             // btnStartServer
             // 
-            this.btnStartServer.Location = new System.Drawing.Point(213, 352);
-            this.btnStartServer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnStartServer.Location = new System.Drawing.Point(269, 340);
+            this.btnStartServer.Margin = new System.Windows.Forms.Padding(4);
             this.btnStartServer.Name = "btnStartServer";
             this.btnStartServer.Size = new System.Drawing.Size(100, 29);
             this.btnStartServer.TabIndex = 0;
@@ -49,8 +49,8 @@
             // btnStopServer
             // 
             this.btnStopServer.Enabled = false;
-            this.btnStopServer.Location = new System.Drawing.Point(428, 352);
-            this.btnStopServer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnStopServer.Location = new System.Drawing.Point(509, 340);
+            this.btnStopServer.Margin = new System.Windows.Forms.Padding(4);
             this.btnStopServer.Name = "btnStopServer";
             this.btnStopServer.Size = new System.Drawing.Size(100, 29);
             this.btnStopServer.TabIndex = 2;
@@ -68,7 +68,7 @@
             // 
             this.listView1.FullRowSelect = true;
             this.listView1.Location = new System.Drawing.Point(17, 15);
-            this.listView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.listView1.Margin = new System.Windows.Forms.Padding(4);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(844, 308);
             this.listView1.TabIndex = 3;
@@ -80,12 +80,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(879, 396);
+            this.ClientSize = new System.Drawing.Size(879, 387);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.btnStopServer);
             this.Controls.Add(this.btnStartServer);
             this.Icon = global::WcfServerMGR.Properties.Resources.ServerIcon;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(894, 432);
             this.Name = "frm_SvcMgr";
             this.Text = "数据服务平台";
